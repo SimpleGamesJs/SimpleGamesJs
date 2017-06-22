@@ -1,20 +1,31 @@
-var path = require('path');
-var express = require('express');
-var app = express();
+const path = require('path');
+const express = require('express');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
 
-// const webpack = require('webpack');
-// const webpackConfig = require("./webpack.config.js");
-// let compiler = webpack(webpackConfig);
-var routes = require('./server/routes')
+const config = require('./webpack.config.js');
+const routes = require('./server/routes');
 
-app.use(express.static(path.join(__dirname,'front')));
+const 	app 			= express(),
+		compiler 		= webpack(config),
+		isDevelopment 	= process.env.NODE_ENV !== 'production';
+		
+global.PATH  = {
+	app: 	__dirname,
+	front: 	path.join(__dirname, 'front')
+}
 
+if (isDevelopment) {
 
-app.use('/',routes)
+	app.use(webpackDevMiddleware(compiler, {
+		publicPath: config.output.publicPath
+	}));
+	app.use(webpackHotMiddleware(compiler));
+}
 
-// app.get('/', function (req, res) {
-// 	res.send('/init.html');
-// });
+app.use('', express.static(path.join(PATH.front, 'dist')));
+app.use('/', routes);
 
 app.listen(3000, function () {
 	console.log('Example app listening on port 3000!');
