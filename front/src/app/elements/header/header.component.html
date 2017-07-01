@@ -1,0 +1,7 @@
+<menu>
+  <li class="menuItem" *ngFor="let route of routes">
+    <a routerLink="{{ route.path }}" routerLinkActive="{{ currentRoute === route.path}}">
+      {{ route.data.title }}
+    </a>
+  </li>
+</menu>
